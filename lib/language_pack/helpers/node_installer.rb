@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LanguagePack::Helpers::NodeInstaller
   attr_reader :version
 
@@ -29,6 +31,7 @@ class LanguagePack::Helpers::NodeInstaller
   end
 
   private
+
   def node_folder(version)
     "node-v#{version}-linux-x64"
   end

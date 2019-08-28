@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "language_pack/shell_helpers"
 module LanguagePack::Installers; end
 
@@ -26,6 +28,7 @@ module LanguagePack::Installers::RubyInstaller
     Dir["#{install_dir}/bin/*"].each do |vendor_bin|
       # for Ruby 2.6.0+ don't symlink the Bundler bin so our shim works
       next if vendor_bin.include?("bundle")
+
       run("ln -s ../#{vendor_bin} #{DEFAULT_BIN_DIR}")
     end
   end

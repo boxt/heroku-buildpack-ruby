@@ -1,4 +1,6 @@
-require_relative '../spec_helper'
+# frozen_string_literal: true
+
+require_relative "../spec_helper"
 
 describe "Heroku ruby getting started" do
   it "clears runtime cache" do
