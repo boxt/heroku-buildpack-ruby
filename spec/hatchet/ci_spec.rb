@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-require "spec_helper"
+require 'spec_helper'
 
 describe "CI" do
   it "Does not cause the double ruby rainbow bug" do

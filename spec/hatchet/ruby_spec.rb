@@ -1,11 +1,9 @@
-# frozen_string_literal: true
-
-require_relative "../spec_helper"
+require_relative '../spec_helper'
 
 describe "Ruby apps" do
   describe "running Ruby from outside the default dir" do
     it "works" do
-      Hatchet::Runner.new("cd_ruby", stack: DEFAULT_STACK).deploy do |app|
+      Hatchet::Runner.new('cd_ruby', stack: DEFAULT_STACK).deploy do |app|
         expect(app.output).to match("cd version ruby 2.5.1")
       end
     end
@@ -13,14 +11,14 @@ describe "Ruby apps" do
 
   describe "bundler ruby version matcher" do
     it "installs a version even when not present in the Gemfile.lock" do
-      Hatchet::Runner.new("bundle-ruby-version-not-in-lockfile", stack: DEFAULT_STACK).deploy do |app|
+      Hatchet::Runner.new('bundle-ruby-version-not-in-lockfile', stack: DEFAULT_STACK).deploy do |app|
         expect(app.output).to         match("2.5.1")
         expect(app.run("ruby -v")).to match("2.5.1")
       end
     end
 
     it "works even when patchfile is specified" do
-      Hatchet::Runner.new("problem_gemfile_version", stack: DEFAULT_STACK).deploy do |app|
+      Hatchet::Runner.new('problem_gemfile_version', stack: DEFAULT_STACK).deploy do |app|
         expect(app.output).to match("2.5.1")
       end
     end
@@ -62,7 +60,7 @@ describe "Ruby apps" do
 
     context "Ruby 1.9+" do
       it "runs a rake task if the gem exists" do
-        Hatchet::Runner.new("default_with_rakefile").deploy do |app, _heroku|
+        Hatchet::Runner.new('default_with_rakefile').deploy do |app, heroku|
           expect(app.output).to include("foo")
         end
       end
@@ -72,7 +70,7 @@ describe "Ruby apps" do
   describe "database configuration" do
     context "no active record" do
       it "writes a heroku specific database.yml" do
-        Hatchet::Runner.new("default_ruby").deploy do |app, _heroku|
+        Hatchet::Runner.new("default_ruby").deploy do |app, heroku|
           expect(app.output).to     include("Writing config/database.yml to read from DATABASE_URL")
           expect(app.output).not_to include("Your app was upgraded to bundler")
         end
@@ -81,7 +79,7 @@ describe "Ruby apps" do
 
     context "active record 4.1+" do
       it "doesn't write a heroku specific database.yml" do
-        Hatchet::Runner.new("activerecord41_scaffold").deploy do |app, _heroku|
+        Hatchet::Runner.new("activerecord41_scaffold").deploy do |app, heroku|
           expect(app.output).not_to include("Writing config/database.yml to read from DATABASE_URL")
         end
       end
@@ -98,6 +96,8 @@ describe "Raise errors on specific gems" do
     end
   end
 end
+
+
 
 describe "No Lockfile" do
   it "should not deploy" do

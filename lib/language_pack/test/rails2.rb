@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-# module LanguagePack::Test::Rails2
+#module LanguagePack::Test::Rails2
 class LanguagePack::Rails2
   # sets up the profile.d script for this buildpack
   def setup_profiled
@@ -22,7 +20,7 @@ class LanguagePack::Rails2
 
   def prepare_tests
     # need to clear db:create before db:schema:load_if_ruby gets called by super
-    topic "Clearing #{db_test_tasks_to_clear.join(' ')} rake tasks"
+    topic "Clearing #{db_test_tasks_to_clear.join(" ")} rake tasks"
     clear_db_test_tasks
     super
   end
@@ -36,17 +34,17 @@ class LanguagePack::Rails2
 
   # rails test runner + rspec depend on db:test:purge which drops/creates a db which doesn't work on Heroku's DB plans
   def clear_db_test_tasks
-    FileUtils.mkdir_p "lib/tasks"
+    FileUtils::mkdir_p 'lib/tasks'
     File.open("lib/tasks/heroku_clear_tasks.rake", "w") do |file|
       file.puts "# rubocop:disable all"
       content = db_test_tasks_to_clear.map do |task_name|
-        <<~FILE
-          if Rake::Task.task_defined?('#{task_name}')
-            Rake::Task['#{task_name}'].clear
-            task '#{task_name}' do
-            end
-          end
-        FILE
+        <<-FILE
+if Rake::Task.task_defined?('#{task_name}')
+  Rake::Task['#{task_name}'].clear
+  task '#{task_name}' do
+  end
+end
+FILE
       end.join("\n")
       file.print content
       file.puts "# rubocop:enable all"
@@ -54,7 +52,6 @@ class LanguagePack::Rails2
   end
 
   private
-
   def db_prepare_test_rake_tasks
     schema_load    = rake.task("db:schema:load_if_ruby")
     structure_load = rake.task("db:structure:load_if_sql")
@@ -76,6 +73,7 @@ class LanguagePack::Rails2
 
     [schema_load, structure_load, db_migrate]
   end
+
 
   def detect_schema_format
     run("rails runner 'puts ActiveRecord::Base.schema_format'", user_env: true)

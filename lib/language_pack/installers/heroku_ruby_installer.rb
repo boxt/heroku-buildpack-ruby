@@ -1,12 +1,9 @@
-# frozen_string_literal: true
-
-require "language_pack/installers/ruby_installer"
-require "language_pack/base"
-require "language_pack/shell_helpers"
+require 'language_pack/installers/ruby_installer'
+require 'language_pack/base'
+require 'language_pack/shell_helpers'
 
 class LanguagePack::Installers::HerokuRubyInstaller
-  include LanguagePack::Installers::RubyInstaller
-  include LanguagePack::ShellHelpers
+  include LanguagePack::ShellHelpers, LanguagePack::Installers::RubyInstaller
 
   BASE_URL = LanguagePack::Base::VENDOR_URL
 
@@ -26,3 +23,4 @@ class LanguagePack::Installers::HerokuRubyInstaller
     end
   end
 end
+

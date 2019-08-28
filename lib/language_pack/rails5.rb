@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-require "securerandom"
+require 'securerandom'
 require "language_pack"
 require "language_pack/rails42"
 
@@ -8,26 +6,25 @@ class LanguagePack::Rails5 < LanguagePack::Rails42
   # @return [Boolean] true if it's a Rails 5.x app
   def self.use?
     instrument "rails5.use" do
-      rails_version = bundler.gem_version("railties")
+      rails_version = bundler.gem_version('railties')
       return false unless rails_version
-
-      is_rails = rails_version >= Gem::Version.new("5.x") &&
-                 rails_version <  Gem::Version.new("6.0.0")
+      is_rails = rails_version >= Gem::Version.new('5.x') &&
+                 rails_version <  Gem::Version.new('6.0.0')
       return is_rails
     end
   end
 
   def setup_profiled
-    instrument "setup_profiled" do
+    instrument 'setup_profiled' do
       super
       set_env_default "RAILS_LOG_TO_STDOUT", "enabled"
     end
   end
 
   def default_config_vars
-    super.merge(
+    super.merge({
       "RAILS_LOG_TO_STDOUT" => "enabled"
-    )
+    })
   end
 
   def install_plugins
@@ -49,49 +46,47 @@ class LanguagePack::Rails5 < LanguagePack::Rails42
   end
 
   private
+    def has_ffmpeg?
+      run("which ffmpeg")
+      return $?.success?
+    end
 
-  def has_ffmpeg?
-    run("which ffmpeg")
-    $CHILD_STATUS.success?
-  end
+    def needs_ffmpeg?
+      !has_ffmpeg?
+    end
 
-  def needs_ffmpeg?
-    !has_ffmpeg?
-  end
+    def local_storage?
+      return false unless @local_storage_config.success?
+      @local_storage_config.did_match?("local")
+    end
 
-  def local_storage?
-    return false unless @local_storage_config.success?
+    def warn_local_storage
+      mcount("warn.activestorage.local_storage")
+      warn(<<-WARNING)
+You set your `config.active_storage.service` to :local in production.
+If you are uploading files to this app, they will not persist after the app
+is restarted, on one-off dynos, or if the app has multiple dynos.
+Heroku applications have an ephemeral file system. To
+persist uploaded files, please use a service such as S3 and update your Rails
+configuration.
 
-    @local_storage_config.did_match?("local")
-  end
+For more information can be found in this article:
+  https://devcenter.heroku.com/articles/active-storage-on-heroku
 
-  def warn_local_storage
-    mcount("warn.activestorage.local_storage")
-    warn(<<~WARNING)
-      You set your `config.active_storage.service` to :local in production.
-      If you are uploading files to this app, they will not persist after the app
-      is restarted, on one-off dynos, or if the app has multiple dynos.
-      Heroku applications have an ephemeral file system. To
-      persist uploaded files, please use a service such as S3 and update your Rails
-      configuration.
+WARNING
+    end
 
-      For more information can be found in this article:
-        https://devcenter.heroku.com/articles/active-storage-on-heroku
+    def warn_no_ffmpeg
+      mcount("warn.activestorage.no_binaries.stack-#{stack}")
+      mcount("warn.activestorage.no_binaries.all")
+      warn(<<-WARNING)
+We detected that some binary dependencies required to
+use all the preview features of Active Storage are not
+present on this system.
 
-    WARNING
-  end
+For more information please see:
+  https://devcenter.heroku.com/articles/active-storage-on-heroku
 
-  def warn_no_ffmpeg
-    mcount("warn.activestorage.no_binaries.stack-#{stack}")
-    mcount("warn.activestorage.no_binaries.all")
-    warn(<<~WARNING)
-      We detected that some binary dependencies required to
-      use all the preview features of Active Storage are not
-      present on this system.
-
-      For more information please see:
-        https://devcenter.heroku.com/articles/active-storage-on-heroku
-
-    WARNING
-  end
+WARNING
+    end
 end

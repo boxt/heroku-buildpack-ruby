@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-# frozen_string_literal: true
 
 # This script will detect which test script or framework an app is likely to be
 # using and run the appropriate command. It is expected that `ruby_test-compile`
@@ -7,7 +6,7 @@
 # a customer's app needs.
 $stdout.sync = true
 
-$LOAD_PATH.unshift File.expand_path("../../lib", __dir__)
+$:.unshift File.expand_path("../../../lib", __FILE__)
 require "language_pack"
 require "language_pack/shell_helpers"
 require "language_pack/test"
@@ -18,7 +17,7 @@ include LanguagePack::ShellHelpers
 def execute_test(command)
   topic("Running test: #{command}")
   execute_command(command)
-  exit $CHILD_STATUS.exitstatus
+  exit $?.exitstatus
 end
 
 def execute_command(command)
@@ -27,7 +26,7 @@ def execute_command(command)
   # having no whitespace before output. To avoid adding whitespace
   # for the original Kernel.puts to be used by passing in the
   # Kernel object.
-  pipe(command, user_env: true, output_object: Kernel)
+  pipe(command, :user_env => true, :output_object => Kernel)
 end
 
 # $ bin/test BUILD_DIR ENV_DIR ARTIFACT_DIR
@@ -38,7 +37,7 @@ LanguagePack::ShellHelpers.initialize_env(env_dir)
 # user's application. It needs the propper `PATH`, where ever Ruby is installed
 # we always add a symlink to the `bin/ruby` file so that is always valid.
 # We calculate the gem path the same way we do when compiling.
-LanguagePack::ShellHelpers.user_env_hash["PATH"] = "#{build_dir}/bin:#{ENV['PATH']}"
+LanguagePack::ShellHelpers.user_env_hash["PATH"] = "#{build_dir}/bin:#{ENV["PATH"]}"
 LanguagePack::ShellHelpers.user_env_hash["GEM_PATH"] = LanguagePack::Ruby.slug_vendor_base
 
 bundler = LanguagePack::Helpers::BundlerWrapper.new(
@@ -64,3 +63,4 @@ execute_test(
     "rake test"
   end
 )
+

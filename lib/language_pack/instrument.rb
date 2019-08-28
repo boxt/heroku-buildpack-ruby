@@ -1,10 +1,8 @@
-# frozen_string_literal: true
-
-require "benchmark"
-require "stringio"
-require "lpxc"
-require "date"
-require "language_pack/ruby"
+require 'benchmark'
+require 'stringio'
+require 'lpxc'
+require 'date'
+require 'language_pack/ruby'
 
 module LanguagePack
   module Instrument
@@ -12,7 +10,7 @@ module LanguagePack
       out.puts "measure.#{message}.start=#{start_time} measure.#{message}.end=#{end_time} measure.#{message}.duration=#{duration} measure.#{message}.level=#{level} measure.#{message}.build_id=#{build_id} request_id=#{request_id} measure.#{message}.buildpack_version=#{buildpack_version} measure.#{message}.buildpack=#{buildpack_name} "
     end
 
-    def self.instrument(cat, _title = "", *_args)
+    def self.instrument(cat, title = "", *args)
       ret        = nil
       start_time = DateTime.now.iso8601(6)
       duration = Benchmark.realtime do
@@ -20,17 +18,17 @@ module LanguagePack
           ret = yield
         end
       end
-      end_time = DateTime.now.iso8601(6)
+      end_time   = DateTime.now.iso8601(6)
       bench_msg(cat, block_depth, start_time, end_time, duration, build_id, buildpack_version)
 
       ret
     end
 
     def self.out
-      Thread.current[:out] ||= ENV["LOGPLEX_DEFAULT_TOKEN"] ? Lpxc.new(batch_size: 1) : StringIO.new
+      Thread.current[:out] ||= ENV['LOGPLEX_DEFAULT_TOKEN'] ? Lpxc.new(batch_size: 1) : StringIO.new
     end
 
-    def self.trace(name, *_args, &blk)
+    def self.trace(name, *args, &blk)
       ret         = nil
       block_depth = 0
 
@@ -53,11 +51,11 @@ module LanguagePack
     end
 
     def self.build_id
-      ENV["REQUEST_ID"] || ENV["SLUG_ID"]
+      ENV['REQUEST_ID'] || ENV['SLUG_ID']
     end
 
     def self.request_id
-      ENV["REQUEST_ID"]
+      ENV['REQUEST_ID']
     end
 
     def self.buildpack_version

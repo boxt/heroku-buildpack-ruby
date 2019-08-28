@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "language_pack"
 require "language_pack/rails41"
 
@@ -8,25 +6,24 @@ class LanguagePack::Rails42 < LanguagePack::Rails41
   # @return [Boolean] true if it's a Rails 4.2 app
   def self.use?
     instrument "rails42.use" do
-      rails_version = bundler.gem_version("railties")
+      rails_version = bundler.gem_version('railties')
       return false unless rails_version
-
-      is_rails42 = rails_version >= Gem::Version.new("4.2.0") &&
-                   rails_version <  Gem::Version.new("5.0.0")
+      is_rails42 = rails_version >= Gem::Version.new('4.2.0') &&
+                   rails_version <  Gem::Version.new('5.0.0')
       return is_rails42
     end
   end
 
   def setup_profiled
-    instrument "setup_profiled" do
+    instrument 'setup_profiled' do
       super
       set_env_default "RAILS_SERVE_STATIC_FILES", "enabled"
     end
   end
 
   def default_config_vars
-    super.merge(
-      "RAILS_SERVE_STATIC_FILES" => env("RAILS_SERVE_STATIC_FILES") || "enabled"
-    )
+    super.merge({
+      "RAILS_SERVE_STATIC_FILES"  => env("RAILS_SERVE_STATIC_FILES") || "enabled"
+    })
   end
 end

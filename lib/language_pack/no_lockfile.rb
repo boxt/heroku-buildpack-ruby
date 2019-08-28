@@ -1,11 +1,9 @@
-# frozen_string_literal: true
-
 require "language_pack"
 require "language_pack/base"
 
 class LanguagePack::NoLockfile < LanguagePack::Base
   def self.use?
-    !File.exist?("Gemfile.lock")
+    !File.exists?("Gemfile.lock")
   end
 
   def name

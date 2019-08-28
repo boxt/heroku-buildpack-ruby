@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
-# module LanguagePack::Test::Ruby
+#module LanguagePack::Test::Ruby
 class LanguagePack::Ruby
   def compile
-    instrument "ruby.test.compile" do
+    instrument 'ruby.test.compile' do
       new_app?
       Dir.chdir(build_path)
       remove_vendor_bundle
@@ -25,9 +23,8 @@ class LanguagePack::Ruby
   end
 
   private
-
   def db_prepare_test_rake_tasks
-    ["db:schema:load", "db:migrate"].map { |name| rake.task(name) }
+    ["db:schema:load", "db:migrate"].map {|name| rake.task(name) }
   end
 
   def prepare_tests
@@ -38,7 +35,7 @@ class LanguagePack::Ruby
     rake_tasks.each do |rake_task|
       rake_task.invoke(env: rake_env)
       if rake_task.success?
-        puts "#{rake_task.task} completed (#{'%.2f' % rake_task.time}s)"
+        puts "#{rake_task.task} completed (#{"%.2f" % rake_task.time}s)"
       else
         error "Could not prepare database for test"
       end

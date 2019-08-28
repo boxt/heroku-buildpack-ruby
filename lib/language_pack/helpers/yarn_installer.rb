@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class LanguagePack::Helpers::YarnInstaller
   attr_reader :version
 
