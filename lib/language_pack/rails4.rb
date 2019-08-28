@@ -3,7 +3,11 @@ require "language_pack/rails3"
 
 # Rails 4 Language Pack. This is for all Rails 4.x apps.
 class LanguagePack::Rails4 < LanguagePack::Rails3
-  ASSETS_CACHE_LIMIT = 52428800 # bytes
+  ASSETS_CACHE_LIMIT   = 52_428_800 # bytes
+  NODE_MODULES_PATH    = "node_modules"
+  WEBPACKER_PACKS_PATH = "public/packs"
+  WEBPACKER_CACHE_PATH = "tmp/cache/webpacker"
+  YARN_CACHE_PATH      = "~/.yarn-cache"
 
   # detects if this is a Rails 4.x app
   # @return [Boolean] true if it's a Rails 4.x app
@@ -66,11 +70,30 @@ WARNING
     "tmp/cache/assets"
   end
 
+  def load_yarn_cache
+    puts "Loading yarn assets cache"
+    @cache.load NODE_MODULES_PATH
+    @cache.load YARN_CACHE_PATH
+    @cache.load WEBPACKER_CACHE_PATH
+    @cache.load WEBPACKER_PACKS_PATH
+  end
+
+  def store_yarn_cache
+    puts "Storing yarn assets cache"
+    @cache.store NODE_MODULES_PATH
+    @cache.store YARN_CACHE_PATH
+    @cache.store WEBPACKER_CACHE_PATH
+    @cache.store WEBPACKER_PACKS_PATH
+  end
+
   def cleanup
     super
     return if assets_compile_enabled?
     return unless Dir.exist?(default_assets_cache)
+
     FileUtils.remove_dir(default_assets_cache)
+    FileUtils.remove_dir(NODE_MODULES_PATH)    if Dir.exist?(NODE_MODULES_PATH)
+    FileUtils.remove_dir(WEBPACKER_CACHE_PATH) if Dir.exist?(WEBPACKER_CACHE_PATH)
   end
 
   def run_assets_precompile_rake_task
@@ -88,6 +111,7 @@ WARNING
 
         @cache.load_without_overwrite public_assets_folder
         @cache.load default_assets_cache
+        load_yarn_cache
 
         precompile.invoke(env: rake_env)
 
@@ -101,6 +125,7 @@ WARNING
           cleanup_assets_cache
           @cache.store public_assets_folder
           @cache.store default_assets_cache
+          store_yarn_cache
         else
           precompile_fail(precompile.output)
         end
