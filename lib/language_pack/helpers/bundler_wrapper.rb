@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'language_pack/fetcher'
+require "language_pack/fetcher"
 
 # This class is responsible for installing and maintaining a
 # reference to bundler. It contains access to bundler internals
@@ -35,7 +35,7 @@ require 'language_pack/fetcher'
 class LanguagePack::Helpers::BundlerWrapper
   include LanguagePack::ShellHelpers
 
-  BLESSED_BUNDLER_VERSIONS = {}
+  BLESSED_BUNDLER_VERSIONS = {}.freeze
   BLESSED_BUNDLER_VERSIONS["1"] = "1.15.2"
   BLESSED_BUNDLER_VERSIONS["2"] = "2.0.2"
   private_constant :BLESSED_BUNDLER_VERSIONS
@@ -60,7 +60,7 @@ class LanguagePack::Helpers::BundlerWrapper
       msg << "\n"
       msg << "```\n"
       msg << "BUNDLED WITH\n"
-      msg << "   #{version_hash["1"]}\n"
+      msg << "   #{version_hash['1']}\n"
       msg << "```\n"
       super msg
     end
@@ -77,12 +77,12 @@ class LanguagePack::Helpers::BundlerWrapper
 
     @bundler_path         = options[:bundler_path] || @bundler_tmp.join(dir_name)
     @bundler_tar          = options[:bundler_tar]  || "bundler/#{dir_name}.tgz"
-    @orig_bundle_gemfile  = ENV['BUNDLE_GEMFILE']
+    @orig_bundle_gemfile  = ENV["BUNDLE_GEMFILE"]
     @path                 = Pathname.new("#{@bundler_path}/gems/#{dir_name}/lib")
   end
 
   def install
-    ENV['BUNDLE_GEMFILE'] = @gemfile_path.to_s
+    ENV["BUNDLE_GEMFILE"] = @gemfile_path.to_s
 
     fetch_bundler
     $LOAD_PATH << @path
@@ -91,7 +91,7 @@ class LanguagePack::Helpers::BundlerWrapper
   end
 
   def clean
-    ENV['BUNDLE_GEMFILE'] = @orig_bundle_gemfile
+    ENV["BUNDLE_GEMFILE"] = @orig_bundle_gemfile
     @bundler_tmp.rmtree if @bundler_tmp.directory?
   end
 
@@ -116,16 +116,14 @@ class LanguagePack::Helpers::BundlerWrapper
   end
 
   def specs
-    @specs ||= lockfile_parser.specs.each_with_object({}) {|spec, hash| hash[spec.name] = spec }
+    @specs ||= lockfile_parser.specs.each_with_object({}) { |spec, hash| hash[spec.name] = spec }
   end
 
   def platforms
     @platforms ||= lockfile_parser.platforms
   end
 
-  def version
-    @version
-  end
+  attr_reader :version
 
   def dir_name
     "bundler-#{version}"
@@ -136,23 +134,23 @@ class LanguagePack::Helpers::BundlerWrapper
   end
 
   def ruby_version
-    instrument 'detect_ruby_version' do
-      env = { "PATH"     => "#{bundler_path}/bin:#{ENV['PATH']}",
-              "RUBYLIB"  => File.join(bundler_path, "gems", dir_name, "lib"),
-              "GEM_PATH" => "#{bundler_path}:#{ENV["GEM_PATH"]}",
-              "BUNDLE_DISABLE_VERSION_CHECK" => "true"
-            }
+    instrument "detect_ruby_version" do
+      env = { "PATH"                         => "#{bundler_path}/bin:#{ENV['PATH']}",
+              "RUBYLIB"                      => File.join(bundler_path, "gems", dir_name, "lib"),
+              "GEM_PATH"                     => "#{bundler_path}:#{ENV['GEM_PATH']}",
+              "BUNDLE_DISABLE_VERSION_CHECK" => "true" }
       command = "bundle platform --ruby"
 
       # Silently check for ruby version
       output  = run_stdout(command, user_env: true, env: env).strip.lines.last
 
       # If there's a gem in the Gemfile (i.e. syntax error) emit error
-      raise GemfileParseError.new(run("bundle check", user_env: true, env: env)) unless $?.success?
+      raise GemfileParseError, run("bundle check", user_env: true, env: env) unless $CHILD_STATUS.success?
+
       if output.match(/No ruby version specified/)
         ""
       else
-        output.chomp.sub('(', '').sub(')', '').sub(/(p-?\d+)/, ' \1').split.join('-')
+        output.chomp.sub("(", "").sub(")", "").sub(/(p-?\d+)/, ' \1').split.join("-")
       end
     end
   end
@@ -162,19 +160,21 @@ class LanguagePack::Helpers::BundlerWrapper
   end
 
   private
+
   def fetch_bundler
-    instrument 'fetch_bundler' do
-      return true if Dir.exists?(bundler_path)
+    instrument "fetch_bundler" do
+      return true if Dir.exist?(bundler_path)
+
       FileUtils.mkdir_p(bundler_path)
       Dir.chdir(bundler_path) do
         @fetcher.fetch_untar(@bundler_tar)
       end
-      Dir["bin/*"].each {|path| `chmod 755 #{path}` }
+      Dir["bin/*"].each { |path| `chmod 755 #{path}` }
     end
   end
 
   def parse_gemfile_lock
-    instrument 'parse_bundle' do
+    instrument "parse_bundle" do
       gemfile_contents = File.read(@gemfile_lock_path)
       Bundler::LockfileParser.new(gemfile_contents)
     end

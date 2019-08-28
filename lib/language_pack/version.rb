@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "language_pack/base"
 
 module LanguagePack

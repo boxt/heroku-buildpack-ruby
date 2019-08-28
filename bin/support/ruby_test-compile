@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # This script installs an app's Ruby version and dependencies. It's
 # essentially the same thing as `ruby_compile` (which is called by bin/compile)
@@ -12,14 +13,14 @@
 # with the appropriate schema.
 $stdout.sync = true
 
-$:.unshift File.expand_path("../../../lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../../lib", __dir__)
 require "language_pack"
 require "language_pack/shell_helpers"
 require "language_pack/test"
 include LanguagePack::ShellHelpers
 
 begin
-  LanguagePack::Instrument.trace 'test_compile', 'app.test_compile' do
+  LanguagePack::Instrument.trace "test_compile", "app.test_compile" do
     if pack = LanguagePack.detect(ARGV[0], ARGV[1])
       LanguagePack::ShellHelpers.initialize_env(ARGV[2])
       pack.topic("Setting up Test for #{pack.name}")

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "language_pack/shell_helpers"
 
 module LanguagePack
@@ -16,6 +18,7 @@ module LanguagePack
       # vendors all the plugins into the slug
       def install
         return true unless plugins.any?
+
         plugins.each { |plugin| vendor(plugin) }
       end
 
@@ -28,8 +31,9 @@ module LanguagePack
       def vendor(name)
         directory = plugin_dir(name)
         return true if directory.exist?
+
         directory.mkpath
-        Dir.chdir(directory) do |dir|
+        Dir.chdir(directory) do |_dir|
           run("curl #{vendor_url}/#{name}.tgz -s -o - | tar xzf -")
         end
       end

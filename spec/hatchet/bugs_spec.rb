@@ -1,4 +1,6 @@
-require_relative '../spec_helper'
+# frozen_string_literal: true
+
+require_relative "../spec_helper"
 
 describe "Bugs" do
   it "nokogiri should use the system libxml2" do

@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 describe LanguagePack::Ruby do
   describe "#install_binary" do
     context "installing yarn" do
       before do
-        @old_path = ENV['PATH']
-        @old_stack = ENV['STACK']
-        ENV['STACK'] = 'cedar-14'
+        @old_path = ENV["PATH"]
+        @old_stack = ENV["STACK"]
+        ENV["STACK"] = "cedar-14"
       end
 
       after do
-        ENV['PATH'] = @old_path
-        ENV['STACK'] = @old_stack
+        ENV["PATH"] = @old_path
+        ENV["STACK"] = @old_stack
       end
 
       it "sets up PATH" do
@@ -25,7 +27,6 @@ describe LanguagePack::Ruby do
           end
         end
       end
-
     end
   end
 end

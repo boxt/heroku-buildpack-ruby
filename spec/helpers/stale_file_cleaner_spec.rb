@@ -1,7 +1,8 @@
-require 'spec_helper'
+# frozen_string_literal: true
+
+require "spec_helper"
 
 describe "Cleans Stale Files" do
-
   it "removes files if they go over the limit" do
     file_size = 1000
     Dir.mktmpdir do |dir|
@@ -12,7 +13,7 @@ describe "Cleans Stale Files" do
       expect(old_file.exist?).to be_truthy
       expect(new_file.exist?).to be_truthy
 
-      ::LanguagePack::Helpers::StaleFileCleaner.new(dir).clean_over(2*file_size - 50)
+      ::LanguagePack::Helpers::StaleFileCleaner.new(dir).clean_over(2 * file_size - 50)
 
       expect(old_file.exist?).to be_falsey
       expect(new_file.exist?).to be_truthy
@@ -30,7 +31,7 @@ describe "Cleans Stale Files" do
       expect(new_file.exist?).to be_truthy
       dir_size = File.stat(dir)
 
-      ::LanguagePack::Helpers::StaleFileCleaner.new(dir).clean_over(2*file_size + 50)
+      ::LanguagePack::Helpers::StaleFileCleaner.new(dir).clean_over(2 * file_size + 50)
 
       expect(old_file.exist?).to be_truthy
       expect(new_file.exist?).to be_truthy

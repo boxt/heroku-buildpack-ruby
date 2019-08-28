@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "language_pack"
 require "language_pack/base"
 
@@ -18,14 +20,14 @@ class LanguagePack::Metadata
 
   def exists?(key)
     full_key = "#{FOLDER}/#{key}"
-    File.exists?(full_key) && !Dir.exists?(full_key)
+    File.exist?(full_key) && !Dir.exist?(full_key)
   end
 
   def write(key, value, isave = true)
     FileUtils.mkdir_p(FOLDER)
 
     full_key = "#{FOLDER}/#{key}"
-    File.open(full_key, 'w') {|f| f.puts value }
+    File.open(full_key, "w") { |f| f.puts value }
     save if isave
   end
 

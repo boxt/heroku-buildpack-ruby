@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # This script compiles an application so it can run on Heroku.
 # It will install the application's specified version of Ruby, it's dependencies
@@ -7,12 +8,12 @@
 # https://devcenter.heroku.com/articles/ruby-support
 $stdout.sync = true
 
-$:.unshift File.expand_path("../../../lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../../lib", __dir__)
 require "language_pack"
 require "language_pack/shell_helpers"
 
 begin
-  LanguagePack::Instrument.trace 'compile', 'app.compile' do
+  LanguagePack::Instrument.trace "compile", "app.compile" do
     LanguagePack::ShellHelpers.initialize_env(ARGV[2])
     if pack = LanguagePack.detect(ARGV[0], ARGV[1])
       pack.topic("Compiling #{pack.name}")
