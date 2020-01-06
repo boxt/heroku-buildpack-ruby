@@ -1,9 +1,9 @@
-repos/*
 .DS_Store
-vendor/bundler/*
-vendor/bundle/*
+.anvil/
 .env
 .ruby-version
 buildpacks/*
-.anvil/
+repos/*
 tmp/*.log
+vendor/bundle/*
+vendor/bundler/*

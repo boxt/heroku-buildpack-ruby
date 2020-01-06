@@ -3,10 +3,10 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "2.6.3"
+ruby "2.7.0"
 
 group :development, :test do
-  gem "boxt_ruby_style_guide", "3.0.0"
+  gem "boxt_ruby_style_guide", "3.1.0"
   gem "ci-queue"
   gem "excon"
   gem "git", github: "hone/ruby-git", branch: "master"
