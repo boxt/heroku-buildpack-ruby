@@ -35,9 +35,11 @@ require 'language_pack/fetcher'
 class LanguagePack::Helpers::BundlerWrapper
   include LanguagePack::ShellHelpers
 
-  BLESSED_BUNDLER_VERSIONS = {}
-  BLESSED_BUNDLER_VERSIONS["1"] = "1.15.2"
-  BLESSED_BUNDLER_VERSIONS["2"] = "2.0.2"
+  BLESSED_BUNDLER_VERSIONS = {
+    "1" => "1.15.2",
+    "2" => "2.1.3"
+  }.freeze
+
   private_constant :BLESSED_BUNDLER_VERSIONS
 
   class GemfileParseError < BuildpackError
