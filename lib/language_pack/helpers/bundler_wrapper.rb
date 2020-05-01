@@ -36,9 +36,9 @@ class LanguagePack::Helpers::BundlerWrapper
   include LanguagePack::ShellHelpers
 
   BLESSED_BUNDLER_VERSIONS = {}.freeze
-  BLESSED_BUNDLER_VERSIONS["1"] = "1.15.2"
-  BLESSED_BUNDLER_VERSIONS["2"] = "2.1.4"
-  private_constant :BLESSED_BUNDLER_VERSIONS
+  BLESSED_BUNDLER_VERSIONS["1"] = "1.17.3"
+  BLESSED_BUNDLER_VERSIONS["2"] = "2.0.2"
+  BUNDLED_WITH_REGEX = /^BUNDLED WITH$(\r?\n)   (?<major>\d+)\.\d+\.\d+/m.freeze
 
   class GemfileParseError < BuildpackError
     def initialize(error)
@@ -52,7 +52,7 @@ class LanguagePack::Helpers::BundlerWrapper
     def initialize(version_hash, major)
       msg = String.new("Your Gemfile.lock indicates you need bundler `#{major}.x`\n")
       msg << "which is not currently supported. You can deploy with bundler version:\n"
-      version_hash.keys.each do |v|
+      version_hash.each_key do |v|
         msg << "  - `#{v}.x`\n"
       end
       msg << "\nTo use another version of bundler, update your `Gemfile.lock` to point\n"
@@ -165,6 +165,9 @@ class LanguagePack::Helpers::BundlerWrapper
     instrument "fetch_bundler" do
       return true if Dir.exist?(bundler_path)
 
+      topic("Installing bundler #{@version}")
+      bundler_version_escape_valve!
+
       FileUtils.mkdir_p(bundler_path)
       Dir.chdir(bundler_path) do
         @fetcher.fetch_untar(@bundler_tar)
@@ -182,7 +185,7 @@ class LanguagePack::Helpers::BundlerWrapper
 
   def major_bundler_version
     # https://rubular.com/r/jt9yj0aY7fU3hD
-    bundler_version_match = @gemfile_lock_path.read.match(/^BUNDLED WITH$(\r?\n) (?<major>\d+)\.\d+\.\d+/m)
+    bundler_version_match = @gemfile_lock_path.read(mode: "rt").match(BUNDLED_WITH_REGEX)
 
     if bundler_version_match
       bundler_version_match[:major]
@@ -200,6 +203,14 @@ class LanguagePack::Helpers::BundlerWrapper
       @version = BLESSED_BUNDLER_VERSIONS[major]
     else
       raise UnsupportedBundlerVersion.new(BLESSED_BUNDLER_VERSIONS, major)
+    end
+  end
+
+  def bundler_version_escape_valve!
+    topic("Removing BUNDLED WITH version in the Gemfile.lock")
+    contents = File.read("Gemfile.lock")
+    File.open("Gemfile.lock", "w") do |f|
+      f.write contents.sub(/^BUNDLED WITH$(\r?\n)   (?<major>\d+)\.\d+\.\d+/m, "")
     end
   end
 end
