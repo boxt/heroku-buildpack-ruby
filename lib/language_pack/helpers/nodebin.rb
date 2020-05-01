@@ -1,21 +1,22 @@
 # frozen_string_literal: true
 
-require 'json'
+require "json"
 
 class LanguagePack::Helpers::Nodebin
+  NODE_LTS = "10.20.0"
+  YARN = "1.22.4"
+
   def self.hardcoded_node_lts
-    version = '10.16.0'
     {
-      'number' => version,
-      'url' => "https://s3.amazonaws.com/heroku-nodebin/node/release/linux-x64/node-v#{version}-linux-x64.tar.gz"
+      "number" => version,
+      "url" => "https://s3.amazonaws.com/heroku-nodebin/node/release/linux-x64/node-v#{NODE_LTS}-linux-x64.tar.gz"
     }
   end
 
   def self.hardcoded_yarn
-    version = '1.17.3'
     {
-      'number' => version,
-      'url' => "https://s3.amazonaws.com/heroku-nodebin/yarn/release/yarn-v#{version}.tar.gz"
+      "number" => version,
+      "url" => "https://s3.amazonaws.com/heroku-nodebin/yarn/release/yarn-v#{YARN}.tar.gz"
     }
   end
 
