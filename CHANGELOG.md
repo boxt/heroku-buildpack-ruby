@@ -1,5 +1,6 @@
 ## Master (unreleased)
 
+* Default node version now 10.20.0 (https://github.com/boxt/heroku-buildpack-ruby/pull/5)
 * Default node version now 12.16.2, yarn is 1.22.4 (https://github.com/heroku/heroku-buildpack-ruby/pull/986)
 * Gracefully handle unrecognised stacks ([#982](https://github.com/heroku/heroku-buildpack-ruby/pull/982))
 
