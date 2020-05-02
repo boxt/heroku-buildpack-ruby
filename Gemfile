@@ -3,15 +3,15 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "2.6.3"
+ruby "2.6.6"
 
 group :development, :test do
-  gem "boxt_ruby_style_guide", "3.0.0"
+  gem "boxt_ruby_style_guide", "4.3.0"
   gem "ci-queue"
   gem "excon"
   gem "git", github: "hone/ruby-git", branch: "master"
   gem "heroku_hatchet"
-  gem "json", "~> 2.0.2"
+  gem "json", "~> 2.3.0"
   gem "netrc"
   gem "parallel_tests"
   gem "rake"
@@ -19,5 +19,4 @@ group :development, :test do
   gem "rspec-core"
   gem "rspec-expectations"
   gem "rspec-retry"
-  gem "toml-rb"
 end

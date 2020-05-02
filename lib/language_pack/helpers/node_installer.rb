@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 class LanguagePack::Helpers::NodeInstaller
   attr_reader :version
 
   def initialize
     nodebin = LanguagePack::Helpers::Nodebin.node_lts
     @version = nodebin["number"]
-    @url     = nodebin["url"]
+    @url = nodebin["url"]
     @fetcher = LanguagePack::Fetcher.new("")
   end
 
@@ -29,6 +31,7 @@ class LanguagePack::Helpers::NodeInstaller
   end
 
   private
+
   def node_folder(version)
     "node-v#{version}-linux-x64"
   end
