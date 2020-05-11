@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "language_pack/shell_helpers"
 
 module LanguagePack
@@ -12,18 +14,18 @@ module LanguagePack
       end
     end
 
-    DEFAULT_VERSION_NUMBER = "2.6.6"
+    DEFAULT_VERSION_NUMBER = "2.7.0"
     DEFAULT_VERSION        = "ruby-#{DEFAULT_VERSION_NUMBER}"
     LEGACY_VERSION_NUMBER  = "1.9.2"
     LEGACY_VERSION         = "ruby-#{LEGACY_VERSION_NUMBER}"
-    RUBY_VERSION_REGEX     = %r{
+    RUBY_VERSION_REGEX     = /
         (?<ruby_version>\d+\.\d+\.\d+){0}
         (?<patchlevel>p-?\d+){0}
         (?<engine>\w+){0}
         (?<engine_version>.+){0}
 
         ruby-\g<ruby_version>(-\g<patchlevel>)?(-\g<engine>-\g<engine_version>)?
-      }x
+      /x.freeze
 
     attr_reader :set, :version, :version_without_patchlevel, :patchlevel, :engine, :ruby_version, :engine_version
     include LanguagePack::ShellHelpers
@@ -35,14 +37,14 @@ module LanguagePack
       set_version
       parse_version
 
-      @version_without_patchlevel = @version.sub(/-p-?\d+/, '')
+      @version_without_patchlevel = @version.sub(/-p-?\d+/, "")
     end
 
     # https://github.com/bundler/bundler/issues/4621
     def version_for_download
       if rbx?
         "rubinius-#{engine_version}"
-      elsif patchlevel_is_significant? && @patchlevel && @patchlevel.sub(/p/, '').to_i >= 0
+      elsif patchlevel_is_significant? && @patchlevel && @patchlevel.sub(/p/, "").to_i >= 0
         @version
       else
         version_without_patchlevel
@@ -58,11 +60,11 @@ module LanguagePack
     # Before Ruby 2.1 patch releases were done via patchlevel i.e. 1.9.3-p426 versus 1.9.3-p448
     # With 2.1 and above patches are released in the "minor" version instead i.e. 2.1.0 versus 2.1.1
     def patchlevel_is_significant?
-      !jruby? && Gem::Version.new(self.ruby_version) <= Gem::Version.new("2.1")
+      !jruby? && Gem::Version.new(ruby_version) <= Gem::Version.new("2.1")
     end
 
     def rake_is_vendored?
-      Gem::Version.new(self.ruby_version) >= Gem::Version.new("1.9")
+      Gem::Version.new(ruby_version) >= Gem::Version.new("1.9")
     end
 
     def default?
@@ -84,7 +86,7 @@ module LanguagePack
     # determines if a build ruby is required
     # @return [Boolean] true if a build ruby is required
     def build?
-      engine == :ruby && %w(1.8.7 1.9.2).include?(ruby_version)
+      engine == :ruby && %w[1.8.7 1.9.2].include?(ruby_version)
     end
 
     # convert to a Gemfile ruby DSL incantation
@@ -108,6 +110,7 @@ module LanguagePack
     # will produce `ruby-2.3.2`.
     def next_logical_version(increment = 1)
       return false if patchlevel_is_significant?
+
       split_version = @version_without_patchlevel.split(".")
       teeny = split_version.pop
       split_version << teeny.to_i + increment
@@ -126,7 +129,7 @@ module LanguagePack
       split_version[0] = Integer(split_version[0]) + increment
       split_version[1] = 0
       split_version[2] = 0
-      return "ruby-#{split_version.join(".")}"
+      "ruby-#{split_version.join('.')}"
     end
 
     private
@@ -153,9 +156,10 @@ module LanguagePack
 
     def parse_version
       md = RUBY_VERSION_REGEX.match(version)
-      raise BadVersionError.new("'#{version}' is not valid") unless md
-      @ruby_version   = md[:ruby_version]
-      @patchlevel     = md[:patchlevel]
+      raise BadVersionError, "'#{version}' is not valid" unless md
+
+      @ruby_version = md[:ruby_version]
+      @patchlevel = md[:patchlevel]
       @engine_version = md[:engine_version] || @ruby_version
       @engine         = (md[:engine]        || :ruby).to_sym
     end

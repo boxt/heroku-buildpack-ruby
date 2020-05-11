@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "language_pack/fetcher"
+require "English" # Prefer $CHILD_STATUS from the English library over $?.
 
 # This class is responsible for installing and maintaining a
 # reference to bundler. It contains access to bundler internals
@@ -35,9 +36,10 @@ require "language_pack/fetcher"
 class LanguagePack::Helpers::BundlerWrapper
   include LanguagePack::ShellHelpers
 
-  BLESSED_BUNDLER_VERSIONS = {}.freeze
-  BLESSED_BUNDLER_VERSIONS["1"] = "1.17.3"
-  BLESSED_BUNDLER_VERSIONS["2"] = "2.0.2"
+  BLESSED_BUNDLER_VERSIONS = {
+    "1" => "1.17.3",
+    "2" => "2.0.2"
+  }.freeze
   BUNDLED_WITH_REGEX = /^BUNDLED WITH$(\r?\n)   (?<major>\d+)\.\d+\.\d+/m.freeze
 
   class GemfileParseError < BuildpackError
