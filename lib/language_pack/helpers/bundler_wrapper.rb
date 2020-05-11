@@ -146,7 +146,7 @@ class LanguagePack::Helpers::BundlerWrapper
       output = run_stdout(command, user_env: true, env: env).strip.lines.last
 
       # If there's a gem in the Gemfile (i.e. syntax error) emit error
-      raise GemfileParseError, run("bundle check", user_env: true, env: env) unless $CHILD_STATUS.success?
+      raise GemfileParseError, run("bundle check", user_env: true, env: env) unless $CHILD_STATUS&.success?
 
       if output.match(/No ruby version specified/)
         ""
