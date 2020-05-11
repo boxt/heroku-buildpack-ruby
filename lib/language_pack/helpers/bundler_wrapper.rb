@@ -35,9 +35,10 @@ require "language_pack/fetcher"
 class LanguagePack::Helpers::BundlerWrapper
   include LanguagePack::ShellHelpers
 
-  BLESSED_BUNDLER_VERSIONS = {}.freeze
-  BLESSED_BUNDLER_VERSIONS["1"] = "1.17.3"
-  BLESSED_BUNDLER_VERSIONS["2"] = "2.0.2"
+  BLESSED_BUNDLER_VERSIONS = {
+    "1" => "1.17.3",
+    "2" => "2.0.2"
+  }.freeze
   BUNDLED_WITH_REGEX = /^BUNDLED WITH$(\r?\n)   (?<major>\d+)\.\d+\.\d+/m.freeze
 
   class GemfileParseError < BuildpackError
